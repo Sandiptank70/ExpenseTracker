@@ -1,0 +1,160 @@
+﻿
+@model IEnumerable<ExpenseTracker.Models.Category>
+@{
+    ViewBag.Title = "displayCategory";
+}
+
+
+<p style="padding:20px">
+    <button class="btn btn-dark">
+        @Html.ActionLink("Create New Category", "CategoryAdd")
+    </button>
+</p>
+@{ 
+    int TotalExpancecat = 0;
+}
+
+<div id="tableExpense" class="table-wrapper-scroll-y my-custom-scrollbar">
+    <table class="table table-bordered table-striped mb-0" id="table_id">
+
+        <caption>Category</caption>
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.CatName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CatAmount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CatAvalibleAmt)
+                </th>
+                <th style="display:none">
+                    @Html.DisplayNameFor(model => model.Userid)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @try
+            {
+                foreach (var item in Model)
+                {
+                    TotalExpancecat += item.CatAmount;
+                    <tr>
+                        <td class="CatName">
+                            <span> @Html.DisplayFor(modelItem => item.CatName)</span>
+                            @Html.EditorFor(modelItem => item.CatName, new { htmlAttributes = new { style = "display:none" } })
+                        </td>
+                        <td class="CatAmt">
+
+                            <span> @Html.DisplayFor(modelItem => item.CatAmount)</span>
+                            @Html.EditorFor(modelItem => item.CatAmount, new { htmlAttributes = new { style = "display:none" } })
+                        </td>
+                        <td class="CatAvalibleAmt">
+                            <span> @Html.DisplayFor(modelItem => item.CatAvalibleAmt)</span>
+                        </td>
+                        <td style="display:none" class="Id">
+                            <span> @Html.DisplayFor(modelItem => item.Id)</span>
+                        </td>
+                        <td>
+                            <a class="Edit" href="javascript:;">Edit</a>
+
+
+                            <a class="Update" href="javascript:;" style="display:none">Update</a>
+                            <a class="Cancle" href="javascript:;" style="display:none">Cancle</a>
+                            @Html.ActionLink("Delete", "DeleteCategory", new { id = item.Id }, new { @class = "Delete" })
+                        </td>
+                    </tr>
+                }
+            }
+            catch (Exception e)
+            {
+            <td><h3>DataBase Error Please Contact Administrator</h3></td>
+        }
+            </tbody>
+        </table>
+    
+</div>
+<footer><h3>Avalible Balanse:@(ViewBag.limit -TotalExpancecat)</h3>    </footer>
+<script src="~/Scripts/jquery-3.6.3.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#table_id').DataTable({
+            scrollY: 300,
+            paging: false
+            });
+    });
+    $("body").on("click", "#tableExpense .Edit", function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                $(this).find("input").show();
+                $(this).find("span").hide();
+            }
+        });
+        row.find(".Update").show();
+        row.find(".Cancle").show();
+        row.find(".Delete").hide();
+        $(this).hide();
+    })
+    $("body").on("click", "#tableExpense .Update", function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                var span = $(this).find("span");
+                var input = $(this).find("input");
+                span.html(input.val());
+                span.show();
+                input.hide();
+            }
+        });
+        row.find(".Edit").show();
+        row.find(".Delete").show();
+        row.find(".Cancle").hide();
+        $(this).hide();
+
+        var value = {
+            Id: parseInt(row.find(".Id").find("span").html()),
+
+            CatName: row.find(".CatName").find("span").html(),
+            CatAmount: parseInt(row.find(".CatAmt").find("span").html()),
+            Userid:1
+
+
+
+        };
+        console.log(value);
+        $.ajax({
+            async: true,
+            type: "PUT",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(value),
+            url: 'https://localhost:44342/api/Category',
+            success: function (response) {
+                if (response.success) {
+                    alert(`${response}`);
+                } else {
+                    // DoSomethingElse()
+                    alert(`${response}`);
+                    location.reload();
+                    document.getElementById("Alert").innerHTML="Data Update";
+
+                }
+            },
+            error: function (response) {
+                alert(response);
+
+            }
+
+
+
+        });
+
+
+    });
+
+
+</script>
+

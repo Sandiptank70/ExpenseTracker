@@ -1,0 +1,259 @@
+﻿@model IEnumerable<ExpenseTracker.Models.ExpanceModel>
+
+@{
+    ViewBag.Title = "Index";
+    int ExpenseAmount= 0;
+}
+<br />
+
+<div class="row" style="max-size:400px;min-block-size:300px">
+    <div class="col-lg-2 table-condensed table-bordered table-hover" id="Category">
+        <table class="table">
+            <caption>
+                <h3>Category</h3>
+            </caption>
+            <tr>
+                <th>
+                    Category
+                </th>
+            </tr>
+            @try
+            { 
+                foreach (var item in ViewBag.cate)
+            {
+                <tr class="alt">
+                    <td> @Html.ActionLink((string)item.CatName, "Filter", new { id = item.Id })</td>
+                    <td class="avalibleamt" style="display:none"> @item.CatAvalibleAmt</td>
+                    <td hidden><img src="~/Content/Image/caution.png" style="width:30%;height:30%;overflow:hidden" /></td>
+
+                </tr>
+            }
+
+            }
+            catch(Exception e)
+            {
+                <td><h3>DataBase Error Please Contact Administrator</h3></td>
+            }
+            </table>
+    </div>
+    <div class="col-lg-10 table-wrapper-scroll-y my-custom-scrollbar"  id="tableExpense">
+        <table class="table table-bordered table-striped mb-0" id="Mytable" style="overflow:scroll">
+            <caption>
+                <h3>Expense</h3>
+            </caption>
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CatName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ExpName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ExpAmt)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ExpDescription)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ExpDate)
+                    </th>
+                    <th>
+
+                    </th>
+                    <th>
+
+                    </th>
+                    <th hidden></th>
+                </tr>
+            </thead>
+            @try
+            {
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        ExpenseAmount += item.ExpAmt;
+                        <tr>
+                            <td style="display:none" class="Id">
+                                <span style="display:none">  @Html.DisplayFor(modelItem => item.Id)</span>
+                            </td>
+                            <td class="CatName">
+                                <span>  @Html.DisplayFor(modelItem => item.CatName)</span>
+
+                            </td>
+                            <td class="ExpanseName">
+                                <span>@Html.DisplayFor(modelItem => item.ExpName)</span>
+                                @Html.EditorFor(modelItem => item.ExpName, new { htmlAttributes = new { style = "display:none" } })
+                            </td>
+                            <td class="ExpanseAmt">
+
+                                <span>@Html.DisplayFor(modelItem => item.ExpAmt)</span>
+
+                                @Html.EditorFor(modelItem => item.ExpAmt, new { htmlAttributes = new { style = "display:none" } })
+                            </td>
+                            <td class="ExpanseDesc">
+                                <span>@Html.DisplayFor(modelItem => item.ExpDescription)</span>
+                                @Html.EditorFor(modelItem => item.ExpDescription, new { htmlAttributes = new { style = "display:none" } })
+                            </td>
+                            <td class="Expansedate">
+                                <span>@Html.DisplayFor(modelItem => item.ExpDate)</span>
+                                <input type="date" value="@item.ExpDate.Date.ToString("yyyy-MM-dd")" style="display:none" class="date" required />
+                            </td>
+                            <td class="categoryid">
+                                <span style="display:none">@Html.DisplayFor(modelItem => item.Category)</span>
+                            </td>
+                            <td>
+                                <a class="Edit" href="javascript:;">Edit</a>|
+
+                                <a class="Update" href="javascript:;" style="display:none">Update</a>|
+
+                                @Html.ActionLink("Cancle", "", new { id = item.Id }, new { @class = "Cancle", style = "display:none", })
+                                @Html.ActionLink("Delete", "Deleteexpance", new { id = item.Id }, new { @class = "Delete" })
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            }
+            catch (Exception e)
+            {
+
+                <td><h3>DataBase Error For Faching Data Please Contact Administrator</h3></td>
+
+            }
+            <tfoot></tfoot>
+</div>
+</div>
+
+</table>
+@section Display{
+    <hr />
+    <footer contentEditable>
+        <table class="table">
+            <tr>
+                @try
+                {
+                    <td>Total Limit</td>
+                    <td>@ViewBag.limit</td>
+                    <td>Total Expenses</td>
+                    <td>@ExpenseAmount</td>
+                    <td>Avalible Amount</td>
+                    <td>@(ViewBag.limit- ExpenseAmount)</td>
+                }
+                catch (Exception e)
+                {
+                    <td><h3>DataBase Error Please Contact Administrator</h3></td>
+                }
+            </tr>
+        </table>
+    </footer>
+
+}
+<script src="~/Scripts/jquery-3.6.3.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Mytable').dataTable({
+            scrollY: 300,
+            paging: false
+            });
+        
+    });
+
+    
+    $(function () {
+        $(".avalibleamt").each(function () {
+            var value = parseInt($(this).html());
+            if (value < 0) {
+                $(this).parent().css('color', 'red');
+                $(this).next().removeAttr('hidden');
+            }
+        });
+        
+    });
+    $("body").on("click", "#tableExpense .Edit", function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                $(this).find("input").show();
+                $(this).find("select").show();
+                $(this).find("span").hide();
+            }
+        });
+        row.find(".Update").show();
+        row.find(".Cancle").show();
+        row.find(".Delete").hide();
+        $(this).hide();
+    })
+    $("body").on("click", "#tableExpense .Update", function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                var span = $(this).find("span");
+                var input = $(this).find("input");
+                var select = $(this).find("select");
+                span.html(input.val());
+                span.show();
+                input.hide();
+                select.hide();
+            }
+        });
+        row.find(".Edit").show();
+        row.find(".Delete").show();
+        row.find(".Cancle").hide();
+        $(this).hide();
+
+        var date = new Date($('.date').val());
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        var date1 = [year, month, day].join('/');
+        var value = {
+            Id: parseInt(row.find(".Id").find("span").html()),
+            Category: parseInt(row.find(".categoryid").find("span").html()),
+            ExpName: row.find(".ExpanseName").find("span").html(),
+            ExpAmt: parseInt(row.find(".ExpanseAmt").find("span").html()),
+            ExpDescription: row.find(".ExpanseDesc").find("span").html(),
+            ExpDate: row.find(".Expansedate").find("span").html(),
+
+
+        };
+        console.log(value);
+        $.ajax({
+            async: true,
+            type: "PUT",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(value),
+            url: 'https://localhost:44342/api/WebApi',
+            success: function (response) {
+                if (response.success) {
+                    alert(`${response}`);
+                } else {
+                    // DoSomethingElse()
+                    alert(`${response}`);
+                    location.reload(true);
+                }
+            },
+            error: function (response) {
+                alert(response);
+
+            }
+            
+
+
+
+        });
+
+
+    });
+    $('#Category tr').bind('click', function (e) {
+        //$(e.currentTarget).children('td, th').css('background-color', '#FF0000');
+        $('tr td').css({ 'background-color': 'White' });
+        $('td', this).css({ 'background-color': 'red' });
+        
+    })
+
+
+</script>
+
+
