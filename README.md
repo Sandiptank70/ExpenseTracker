@@ -28,7 +28,7 @@ Client Side
 - bootstrap 3.4.1
 - jQuery 3.6.3
 - .NET Razor 3.6.3
-
+- Ajax DataTables
 
 
 
