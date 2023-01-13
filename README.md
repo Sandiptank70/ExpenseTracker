@@ -22,6 +22,7 @@ Server Side
 - CQRS
      
     1.Microsoft.EntityFrameworkCore (v6.4.4)
+    
     2.Microsoft.EntityFrameworkCore.SqlServer (v6.4.4)
     
 Client Side
