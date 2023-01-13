@@ -20,8 +20,9 @@ Server Side
 
 - .NET 5.2.9 for server side API
 - CQRS
-***     
-    1. EntityFramework 6.4.4 on Sql Server
+     
+    1.Microsoft.EntityFrameworkCore (v6.4.4)
+    2.Microsoft.EntityFrameworkCore.SqlServer (v6.4.4)
     
 Client Side
 
